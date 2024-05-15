@@ -1,40 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "./components/Header";
 import TodoComputed from "./components/TodoComputed";
 import TodoCreate from "./components/TodoCreate";
 import TodoFilter from "./components/TodoFilter";
 import TodoList from "./components/TodoList";
 
-const initialStatesTodos = [
-    {
-        id: 1,
-        tittle: "ir al gym",
-        completed: false,
-    },
-    {
-        id: 2,
-        tittle: "completar curso java",
-        completed: true,
-    },
-    {
-        id: 3,
-        tittle: "bañarse",
-        completed: false,
-    },
-    {
-        id: 4,
-        tittle: "estudiar",
-        completed: false,
-    },
-    {
-        id: 5,
-        tittle: "terminar estudios",
-        completed: false,
-    },
-];
+const initialStatesTodos = JSON.parse(localStorage.getItem("todos")) || [];
 
 const App = () => {
     const [todos, setTodos] = useState(initialStatesTodos);
+
+    useEffect(() => {
+        localStorage.setItem("todos", JSON.stringify(todos));
+    }, [todos]);
 
     const createTodo = (tittle) => {
         const newTodo = {
@@ -82,10 +60,10 @@ const App = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-300 bg-[url('./images/bg-mobile-light.jpg')] bg-contain bg-no-repeat dark:bg-gray-800 transition-all duration-1000 dark:bg-[url('./images/bg-mobile-dark.jpg')]">
+        <div className="min-h-screen bg-gray-300 bg-[url('./images/bg-mobile-light.jpg')] bg-contain bg-no-repeat dark:bg-gray-800 transition-all duration-1000 dark:bg-[url('./images/bg-mobile-dark.jpg')] md:bg-[url('./images/bg-desktop-light.jpg')] md:dark:bg-[url('./images/bg-desktop-dark.jpg')]">
             <Header />
 
-            <main className="container mx-auto px-4 mt-8">
+            <main className="container mx-auto px-4 mt-8 md:max-w-xl">
                 <TodoCreate createTodo={createTodo} />
                 <TodoList
                     todos={filterdTodos()}
