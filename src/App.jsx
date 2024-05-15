@@ -1,64 +1,107 @@
-import CrossIcon from "./components/icons/CrossIcon";
-import MoonIcon from "./components/icons/MoonIcon";
+import { useState } from "react";
+import Header from "./components/Header";
+import TodoComputed from "./components/TodoComputed";
+import TodoCreate from "./components/TodoCreate";
+import TodoFilter from "./components/TodoFilter";
+import TodoList from "./components/TodoList";
+
+const initialStatesTodos = [
+    {
+        id: 1,
+        tittle: "ir al gym",
+        completed: false,
+    },
+    {
+        id: 2,
+        tittle: "completar curso java",
+        completed: true,
+    },
+    {
+        id: 3,
+        tittle: "bañarse",
+        completed: false,
+    },
+    {
+        id: 4,
+        tittle: "estudiar",
+        completed: false,
+    },
+    {
+        id: 5,
+        tittle: "terminar estudios",
+        completed: false,
+    },
+];
 
 const App = () => {
+    const [todos, setTodos] = useState(initialStatesTodos);
+
+    const createTodo = (tittle) => {
+        const newTodo = {
+            id: Date.now(),
+            tittle: tittle.trim(),
+            completed: false,
+        };
+
+        setTodos([...todos, newTodo]);
+    };
+
+    const removeTodo = (id) => {
+        setTodos(todos.filter((todo) => todo.id !== id));
+    };
+
+    const updateTodo = (id) => {
+        setTodos(
+            todos.map((todo) =>
+                todo.id === id ? { ...todo, completed: !todo.completed } : todo
+            )
+        );
+    };
+
+    const computedItemsLeft = todos.filter((todo) => !todo.completed).length;
+
+    const clearCompleted = () => {
+        setTodos(todos.filter((todo) => !todo.completed));
+    };
+
+    const [filter, setFilter] = useState("all");
+
+    const changeFilter = (filter) => setFilter(filter);
+
+    const filterdTodos = () => {
+        switch (filter) {
+            case "all":
+                return todos;
+            case "active":
+                return todos.filter((todo) => !todo.completed);
+            case "completed":
+                return todos.filter((todo) => todo.completed);
+            default:
+                break;
+        }
+    };
+
     return (
-        <div className="min-h-screen bg-gray-300 bg-[url('./images/bg-mobile-light.jpg')] bg-contain bg-no-repeat">
-            <header className="container mx-auto px-4 pt-8">
-                <div className="flex justify-between">
-                    <h1 className="uppercase text-white text-3xl font-semibold tracking-[0.3em]">
-                        TODO
-                    </h1>
-                    <button>
-                        <MoonIcon />
-                    </button>
-                </div>
-                <form className="bg-white rounded-md overflow-hidden py-4 item-center flex gap-4 px-4 mt-8">
-                    <span className="incline-block h-5 w-5 rounded-full border-2" />
-                    <input
-                        className="w-full text-gray-400 outline-none"
-                        type="text"
-                        placeholder="crear nuevo"
-                    />
-                </form>
-            </header>
+        <div className="min-h-screen bg-gray-300 bg-[url('./images/bg-mobile-light.jpg')] bg-contain bg-no-repeat dark:bg-gray-800 transition-all duration-1000 dark:bg-[url('./images/bg-mobile-dark.jpg')]">
+            <Header />
+
             <main className="container mx-auto px-4 mt-8">
-                <div className="bg-white rounded-md">
-                    <article className="flex gap-4 py-4 px-4 border-b border-b-gray-400">
-                        <button className="incline-block h-5 w-5 rounded-full border-2 flex-none" />
-                        <p className="text-gray-500 grow ">completado</p>
-                        <button className="flex-none">
-                            <CrossIcon />
-                        </button>
-                    </article>
-                    <article className="flex gap-4 py-4 px-4 border-b border-b-gray-400">
-                        <button className="incline-block h-5 w-5 rounded-full border-2 flex-none" />
-                        <p className="text-gray-500 grow ">completado</p>
-                        <button className="flex-none">
-                            <CrossIcon />
-                        </button>
-                    </article>
-                    <article className="flex gap-4 py-4 px-4 border-b border-b-gray-400">
-                        <button className="incline-block h-5 w-5 rounded-full border-2 flex-none" />
-                        <p className="text-gray-500 grow ">completado</p>
-                        <button className="flex-none">
-                            <CrossIcon />
-                        </button>
-                    </article>
-                    <section className="py-4 px-4 flex justify-between">
-                        <span className="text-gray-400">5 items</span>
-                        <button className="text-gray-400">limpiar</button>
-                    </section>
-                </div>
+                <TodoCreate createTodo={createTodo} />
+                <TodoList
+                    todos={filterdTodos()}
+                    removeTodo={removeTodo}
+                    updateTodo={updateTodo}
+                />
+                <TodoComputed
+                    computedItemsLeft={computedItemsLeft}
+                    clearCompleted={clearCompleted}
+                />
+                <TodoFilter changeFilter={changeFilter} filter={filter} />
             </main>
-            <section className="container mx-auto px-4 mt-8">
-                <div className=" bg-white p-4 rounded-md flex justify-center gap-4">
-                    <button className="text-blue-600">All</button>
-                    <button className="hover:text-blue-600">Active</button>
-                    <button className="hover:text-blue-600">Completed</button>
-                </div>
-            </section>
-            <p className="text-center mt-8">Drag and drop to reader list</p>
+
+            <footer className="text-center mt-8 dark:text-gray-400">
+                Drag and drop to reader list
+            </footer>
         </div>
     );
 };
